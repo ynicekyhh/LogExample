@@ -6,8 +6,14 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	
+	<!-- Java의 log는 java.util.logging에서 제공했었음 -->
+	<!-- java.util.logging이 빈약하니 이에 기능을 추가해 Log4J가 탄생. 기능이 추가될 때마다 Log5J, Log6J...가 탄생함 -->
+	<!-- Log4J개발자가 로거들이 너무 많이 생기니 복잡하여 기능들을 통합한 인터페이스를 만들어놨고(프레임워크처럼) 이를 구현한 Logback이 탄생함 -->
+	<!-- Logback은 Log4J를 구현한 구현채이나 Spring MyBatis는 기존에 JCL을 사용했었기에 인터페이스가 맞지 않아 에러가 발생함 -->
+	<!-- 따라서 Logback에서 JCL을 구현하고 이를 연결해 줄 인터페이스 설정을 아래처럼 해 줘야 Spring MyBatis에서 연결이 가능해짐 -->
+	<!-- properties에 아래처럼 jclovers를 지정해 줘야 spring 프레임워크와 JCL이 연결이 되어 MyBatis가 얘를 불러다 쓸 수 있음 -->
 	<properties>
-		<org.springframework-version>4.0.4.RELEASE</org.springframework-version>
+		<org.springframework-version>4.1.1.RELEASE</org.springframework-version>
 		<jcloverslf4j.version>1.7.6</jcloverslf4j.version>		
 		<logback.version>1.1.1</logback.version>
 	</properties>
@@ -47,7 +53,7 @@
 		</dependency>
 
 
-
+		<!-- 아래처럼 Logback에서 JCL 을 사용하기 위해 설정을 해 줘야함 -->
 		<!-- Logback --> 
 		<dependency>                                    
 			<groupId>org.slf4j</groupId>                

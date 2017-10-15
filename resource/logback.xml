@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+	<!-- pom.xml에 Logback의 사용 설정을 해 주면 아래처럼 로그를 남기겠다고 정의할 수 있음 -->
+	<!-- 아래의 appender는 <file>을 설정해 주지 않았으니, 기본적으로 콘솔에 로그를 찍게 된다. -->
 	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<charset>UTF-8</charset>
 			<Pattern>
+				<!-- %logger는 패키지 이름이고, {5}는 5개를 출력하라는 것임, 이렇게되면 package들의 이름이 약자로 줄여져서 로그에 표시하게됨 -->
 				%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n
 			</Pattern>
 		</encoder>
 	</appender>
 
+	<!-- trigger는 언제 아래의 rollingPolicy를 실행할 것이냐(50KB가 넘어가면 실행) -->
 	<appender name="fileAppender2" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>c:\LogExample\logexample2.log</file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -18,7 +22,10 @@
 			</Pattern>
 		</encoder>
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<!-- 50KB가 차면 1 ~ 10까지 zip파일로 만들어 관리함.(10을 넘어가면 1부터 지우고 덮어쓰니, 관리자는 미리 로그를 계속해서 하둡에 옮기는 작업을 해 줘야함) -->
+			<!-- 빅데이터는 수집, 적재, 처리, 분석 4단계이고, 파일을 자동으로 하둡에 적재해 주는 툴이 존재함 -->
 			<FileNamePattern>C:\LogExample\logexample2.%i.log.zip</FileNamePattern>
+			<!-- 10번까지 차면 1번을 지워버림 -->
 			<MinIndex>1</MinIndex>
 			<MaxIndex>10</MaxIndex>
 		</rollingPolicy>
@@ -28,6 +35,7 @@
 		</triggeringPolicy>
 	</appender>
 	
+	<!-- DB와는 연결이 안되어 있고, 파일만 appender를 여러 개 만들었음, 이처럼 로거가 어떤 appender를 사용할 지 설정할 수 있음 -->
 	<appender name="fileAppender3" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>c:\LogExample\logexample3.log</file>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -47,23 +55,28 @@
 	</appender>	
 
 
+	<!-- 위에서 설정한 appender에 맞춰 아래처럼 로거들이 어떤 appender를 사용할지 설정하면 appender의 정책대로 사용할 수 있음 -->
 	<!--
 		kr.co.saramin.logexample2 아래 패키지 로그들만  C:\LogExample\logexample2.log 파일에만  출력하는 로거
 	-->
-	<logger name="kr.co.saramin.logexample2"  level="info" additivity="false">
+	<logger name="com.bigdata2017.logexample2"  level="info" additivity="false">
             <appender-ref ref="fileAppender2" />
     </logger>
     
 	<!--
 		kr.co.saramin.logexample3 아래 패키지 로그들만  C:\LogExample\logexample3.log 파일과 콘솔로 출력하는 로거
 	-->
-	<logger name="kr.co.saramin.logexample3"  level="warn" additivity="false">
+	<logger name="com.bigdata2017.logexample3"  level="warn" additivity="false">
             <appender-ref ref="fileAppender3" />
 			<appender-ref ref="consoleAppender" />
     </logger>    
 	
+	<!-- com.bigdata2017.logexample1.controller는 위의 두 개의 appender에 해당하지 않으니 아래의 root에 걸리게 된다. -->
 	<!-- 루트(글로벌) 로거 -->
-	<root level="debug">
+	<!-- ExampleController.java에 보면 LOG.debug(), LOG.info()등이 있는데, level="debug"이면 debug 레벨 아래 레벨은 다 여기 걸리게 된다. -->
+	<!-- debug > info > warn > error의 레벨 순서를 가진다. -->
+	<!-- info와 debug는 보통 spring 개발자들이 보는 로그들. 일반적으로 warn, error정도면 적당 -->
+	<root level="warn">
 		<appender-ref ref="consoleAppender" />
 	</root>
 

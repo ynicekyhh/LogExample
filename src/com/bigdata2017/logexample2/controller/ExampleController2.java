@@ -1,4 +1,4 @@
-package kr.co.saramin.logexample2.controller;
+package com.bigdata2017.logexample2.controller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
